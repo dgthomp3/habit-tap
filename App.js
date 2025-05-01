@@ -6,6 +6,7 @@ export default function App() {
     <View style={styles.container}>
       <Text>Welcome to HabitTap!</Text>
       <Text>This is Dallas's Change</Text>
+      <Text> Changes made by disha</Text>
       <StatusBar style="auto" />
     </View>
   );
