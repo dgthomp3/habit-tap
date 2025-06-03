@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import HomeScreen from './screens/HomeScreen'; // adjust path if needed
 import { globalStyles } from './styles';
 
