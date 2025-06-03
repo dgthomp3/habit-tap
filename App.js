@@ -6,7 +6,8 @@ export default function App() {
     <View style={styles.container}>
       <Text>Welcome to HabitTap!</Text>
       <Text>This is Dallas's Change</Text>
-      <Text> Changes made by disha</Text>
+      <Text> Changes made by disha 2</Text>
+      <Text> Pushing to the Branch - Disha </Text>
       <StatusBar style="auto" />
     </View>
   );
