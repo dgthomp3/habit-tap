@@ -1,15 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import HomeScreen from './screens/HomeScreen'; // adjust path if needed
+import { globalStyles } from './styles';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Welcome to HabitTap!</Text>
-      <Text>This is Dallas's Change</Text>
-      <Text> Changes made by disha 2</Text>
-      <Text> Pushing to the Branch - Disha </Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaView style={globalStyles.container}>
+      <HomeScreen />
+    </SafeAreaView>
   );
 }
 
