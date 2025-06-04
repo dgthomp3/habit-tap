@@ -9,7 +9,7 @@ const dummyHabits = [
   { id: '4', title: '10 Minute Meditation', completed: false },
 ];
 
-export default function HomeScreen() {
+export default function DailyGoalsScreen() {
   const [habits, setHabits] = useState(dummyHabits);
   const [newHabit, setNewHabit] = useState('');
   const [showInput, setShowInput] = useState(false);
@@ -103,7 +103,7 @@ export default function HomeScreen() {
         style={localStyles.fab}
         onPress={() => setShowInput(!showInput)}
       >
-        <Text style={localStyles.fabText}>{showInput ? '✕' : '+'}</Text>
+        <Text style={localStyles.fabText}>{showInput ? 'X' : '+'}</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
