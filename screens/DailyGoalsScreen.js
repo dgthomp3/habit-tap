@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView, View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { globalStyles, colors } from '../styles';
 
 const dummyHabits = [
@@ -11,6 +11,8 @@ const dummyHabits = [
 
 export default function HomeScreen() {
   const [habits, setHabits] = useState(dummyHabits);
+  const [newHabit, setNewHabit] = useState('');
+  const [showInput, setShowInput] = useState(false);
 
   const toggleHabit = (id) => {
     setHabits((prev) =>
@@ -57,6 +59,39 @@ export default function HomeScreen() {
           renderItem={renderHabit}
           contentContainerStyle={{ paddingVertical: 8 }}
         />
+        {showInput && (
+          <View style={{ marginTop: 16 }}>
+            <Text style={{ marginBottom: 6, fontWeight: '600', color: colors.text }}>
+              Add New Habit
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TextInput
+                style={[globalStyles.input, { flex: 1, marginRight: 8 }]}
+                placeholder="e.g., Stretch for 5 min"
+                value={newHabit}
+                onChangeText={setNewHabit}
+              />
+              <TouchableOpacity
+                style={globalStyles.iconButton}
+                onPress={() => {
+                  if (!newHabit.trim()) return;
+                  setHabits((prev) => [
+                    ...prev,
+                    {
+                      id: (Date.now()).toString(),
+                      title: newHabit.trim(),
+                      completed: false,
+                    },
+                  ]);
+                  setNewHabit('');
+                  setShowInput(false);
+                }}
+              >
+                <Text style={{ fontWeight: 'bold' }}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )};
       </View>
 
       <View style={localStyles.progressCard}>
@@ -64,8 +99,11 @@ export default function HomeScreen() {
         <Text style={localStyles.percent}>{percent}% Complete</Text>
       </View>
 
-      <TouchableOpacity style={localStyles.fab}>
-        <Text style={localStyles.fabText}>+</Text>
+      <TouchableOpacity
+        style={localStyles.fab}
+        onPress={() => setShowInput(!showInput)}
+      >
+        <Text style={localStyles.fabText}>{showInput ? '✕' : '+'}</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
