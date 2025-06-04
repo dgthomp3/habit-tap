@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView, View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { globalStyles, colors } from '../styles';
 
 const dummyHabits = [
@@ -40,7 +40,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <View style={[globalStyles.container, { backgroundColor: colors.primary }]}>
+    <SafeAreaView style={[globalStyles.container, { backgroundColor: colors.primary }]}>
       <Text style={[globalStyles.title, { color: '#fff', textAlign: 'center', marginTop: 16 }]}>
         {allComplete ? 'Good Job!' : "Today's Habits"}
       </Text>
@@ -67,7 +67,7 @@ export default function HomeScreen() {
       <TouchableOpacity style={localStyles.fab}>
         <Text style={localStyles.fabText}>+</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -77,7 +77,9 @@ const localStyles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
-  },
+    marginHorizontal: 16, // ← add this
+    marginBottom: 16,
+  },  
   progressText: {
     fontSize: 14,
     color: colors.text,
