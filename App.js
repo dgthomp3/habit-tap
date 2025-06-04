@@ -1,28 +1,46 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoginScreen from './screens/LoginScreen';
+import SignupScreen from './screens/SignUpScreen';
 import DailyGoalsScreen from './screens/DailyGoalsScreen';
-import LoginScreen from './screens/login';
-import SignupScreen from './screens/signup';
-import HomeScreen from './screens/homescreen';
 import MonthlyCompletionScreen from './screens/MonthlyCompletionScreen';
+import { Ionicons } from '@expo/vector-icons';
 
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-export default function App() {
+function MainTabs() {
   return (
-    <SafeAreaView style={globalStyles.container}>
-      <DailyGoalsScreenScreen />
-    </SafeAreaView>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
+          let iconName =
+            route.name === 'Daily Goals'
+              ? 'checkmark-circle-outline'
+              : 'calendar-outline';
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#6ABF69',
+        tabBarInactiveTintColor: 'gray',
+        headerShown: false,
+      })}
+    >
+      <Tab.Screen name="Daily Goals" component={DailyGoalsScreen} />
+      <Tab.Screen name="Monthly Completion" component={MonthlyCompletionScreen} />
+    </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Signup" component={SignupScreen} />
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
