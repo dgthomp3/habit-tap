@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { globalStyles, colors } from '../styles';
 
 const dummyHabits = [
@@ -35,22 +35,76 @@ export default function HomeScreen() {
   );
 
   const allComplete = habits.every((h) => h.completed);
+  const percent = Math.round(
+    (habits.filter((h) => h.completed).length / habits.length) * 100
+  );
 
   return (
-    <View style={globalStyles.container}>
-      <Text style={globalStyles.title}>
-        {allComplete ? 'Good Job!' : 'Today\'s Habits'}
+    <SafeAreaView style={[globalStyles.container, { backgroundColor: colors.primary }]}>
+      <Text style={[globalStyles.title, { color: '#fff', textAlign: 'center', marginTop: 16 }]}>
+        {allComplete ? 'Good Job!' : "Today's Habits"}
       </Text>
-      <Text style={globalStyles.subtitle}>
-        {allComplete ? 'You’ve done all your tasks for the day!' : 'Tap to check off completed tasks'}
+      <Text style={[globalStyles.subtitle, { color: '#E0F2E0', textAlign: 'center', marginBottom: 24 }]}>
+        {allComplete
+          ? 'You\'ve Done All your Task For the Day!'
+          : 'Tap to check off completed tasks'}
       </Text>
 
-      <FlatList
-        data={habits}
-        keyExtractor={(item) => item.id}
-        renderItem={renderHabit}
-        contentContainerStyle={{ paddingVertical: 16 }}
-      />
-    </View>
+      <View style={[globalStyles.card, { backgroundColor: '#fff', borderRadius: 24 }]}>
+        <FlatList
+          data={habits}
+          keyExtractor={(item) => item.id}
+          renderItem={renderHabit}
+          contentContainerStyle={{ paddingVertical: 8 }}
+        />
+      </View>
+
+      <View style={localStyles.progressCard}>
+        <Text style={localStyles.progressText}>Today's Tasks</Text>
+        <Text style={localStyles.percent}>{percent}% Complete</Text>
+      </View>
+
+      <TouchableOpacity style={localStyles.fab}>
+        <Text style={localStyles.fabText}>+</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
+
+const localStyles = StyleSheet.create({
+  progressCard: {
+    backgroundColor: '#EAF6EA',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    marginHorizontal: 16, // ← add this
+    marginBottom: 16,
+  },  
+  progressText: {
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: 6,
+  },
+  percent: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+    backgroundColor: colors.secondary,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+  },
+  fabText: {
+    fontSize: 28,
+    color: '#fff',
+    marginTop: -2,
+  },
+});
