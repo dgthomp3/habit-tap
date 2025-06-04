@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { globalStyles, colors } from '../styles';
-import { getUser } from '../database/dbUtils';
+import { getUser } from '../database/dbUtils.js';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -10,14 +10,21 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = () => {
     if (!email || !password) return Alert.alert('Error', 'Fill in all fields');
+  
+    console.log('Attempting login with:', email, password);
+  
     getUser(email, password, (users) => {
+      console.log('getUser returned:', users);
+  
       if (users.length > 0) {
+        console.log('Successful login, navigating...');
         navigation.navigate('MainTabs');
       } else {
+        console.warn('Login failed - no user matched');
         Alert.alert('Login Failed', 'Invalid credentials');
       }
     });
-  };
+  };  
 
   return (
     <SafeAreaView style={globalStyles.container}>

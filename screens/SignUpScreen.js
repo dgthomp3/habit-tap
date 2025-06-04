@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, Text, Alert, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { TextInput, Text, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { globalStyles, colors } from '../styles';
-import { createUserTable, insertUser } from '../database/dbUtils';
+import { insertUser } from '../database/dbUtils.js';
+import { getDB } from '../database.js';
 
 export default function SignupScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    createUserTable();
-  }, []);
-
   const handleSignup = () => {
     if (!email || !password) return Alert.alert('Error', 'Fill in all fields');
-
+  
+    console.log('Attempting to sign up with:', email, password);
+  
     insertUser(
       email,
       password,
@@ -30,7 +29,7 @@ export default function SignupScreen({ navigation }) {
         }
       }
     );
-  };
+  };  
 
   return (
     <SafeAreaView style={globalStyles.container}>
