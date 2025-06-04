@@ -1,12 +1,12 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import HomeScreen from './screens/HomeScreen'; // adjust path if needed
 import { globalStyles } from './styles';
+import DailyGoalsScreenScreen from './screens/DailyGoalsScreen';
 
 export default function App() {
   return (
     <SafeAreaView style={globalStyles.container}>
-      <HomeScreen />
+      <DailyGoalsScreenScreen />
     </SafeAreaView>
   );
 }
