@@ -47,7 +47,7 @@ export const getUser = async (email, password, callback) => {
       [email, password]
     );
 
-    console.log('🔍 Matching users:', users);
+    console.log('Matching users:', users);
     callback(users);
   } catch (err) {
     console.error('Failed to get user:', err);
