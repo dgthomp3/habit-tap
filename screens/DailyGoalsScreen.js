@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { globalStyles, colors } from '../styles';
+import { initDB } from '../database';
+import { createHabitTable, getAllHabits, insertHabit, toggleHabit } from '../database/dbUtils';
 
-const dummyHabits = [
+const defaultHabits = [
   { id: '1', title: 'Drink Water', completed: true },
   { id: '2', title: 'Read for 30 Minutes', completed: false },
   { id: '3', title: 'Morning Run', completed: true },
@@ -10,16 +12,45 @@ const dummyHabits = [
 ];
 
 export default function DailyGoalsScreen() {
-  const [habits, setHabits] = useState(dummyHabits);
+  const [habits, setHabits] = useState([]);
   const [newHabit, setNewHabit] = useState('');
   const [showInput, setShowInput] = useState(false);
 
-  const toggleHabit = (id) => {
-    setHabits((prev) =>
-      prev.map((habit) =>
-        habit.id === id ? { ...habit, completed: !habit.completed } : habit
-      )
+  useEffect(() => {
+    const setup = async () => {
+      await initDB();
+      await createHabitTable();
+
+      let storedHabits = await getAllHabits();
+      if (storedHabits.length === 0) {
+        for (const habit of defaultHabits) {
+          await insertHabit(habit);
+        }
+        storedHabits = await getAllHabits();
+      }
+
+      setHabits(storedHabits);
+    };
+    setup();
+  }, []);
+
+  const toggleHabitStatus = async (id) => {
+    const updated = habits.map((habit) =>
+      habit.id === id ? { ...habit, completed: !habit.completed } : habit
     );
+    setHabits(updated);
+    const toggled = updated.find((h) => h.id === id);
+    await toggleHabit(id, toggled.completed);
+  };
+
+  const handleAddHabit = async () => {
+    if (!newHabit.trim()) return;
+    const newId = Date.now().toString();
+    const habitObj = { id: newId, title: newHabit.trim(), completed: false };
+    await insertHabit(habitObj);
+    setHabits((prev) => [...prev, habitObj]);
+    setNewHabit('');
+    setShowInput(false);
   };
 
   const renderHabit = ({ item }) => (
@@ -28,7 +59,7 @@ export default function DailyGoalsScreen() {
         globalStyles.habitItem,
         item.completed && { backgroundColor: colors.primary },
       ]}
-      onPress={() => toggleHabit(item.id)}
+      onPress={() => toggleHabitStatus(item.id)}
     >
       <Text style={{ color: item.completed ? '#fff' : colors.text }}>
         {item.title}
@@ -36,10 +67,10 @@ export default function DailyGoalsScreen() {
     </TouchableOpacity>
   );
 
-  const allComplete = habits.every((h) => h.completed);
-  const percent = Math.round(
-    (habits.filter((h) => h.completed).length / habits.length) * 100
-  );
+  const allComplete = habits.length > 0 && habits.every((h) => h.completed);
+  const percent = habits.length > 0
+    ? Math.round((habits.filter((h) => h.completed).length / habits.length) * 100)
+    : 0;
 
   return (
     <SafeAreaView style={[globalStyles.container, { backgroundColor: colors.primary }]}>
@@ -59,6 +90,7 @@ export default function DailyGoalsScreen() {
           renderItem={renderHabit}
           contentContainerStyle={{ paddingVertical: 8 }}
         />
+
         {showInput && (
           <View style={{ marginTop: 16 }}>
             <Text style={{ marginBottom: 6, fontWeight: '600', color: colors.text }}>
@@ -71,27 +103,12 @@ export default function DailyGoalsScreen() {
                 value={newHabit}
                 onChangeText={setNewHabit}
               />
-              <TouchableOpacity
-                style={globalStyles.iconButton}
-                onPress={() => {
-                  if (!newHabit.trim()) return;
-                  setHabits((prev) => [
-                    ...prev,
-                    {
-                      id: (Date.now()).toString(),
-                      title: newHabit.trim(),
-                      completed: false,
-                    },
-                  ]);
-                  setNewHabit('');
-                  setShowInput(false);
-                }}
-              >
+              <TouchableOpacity style={globalStyles.iconButton} onPress={handleAddHabit}>
                 <Text style={{ fontWeight: 'bold' }}>Add</Text>
               </TouchableOpacity>
             </View>
           </View>
-        )};
+        )}
       </View>
 
       <View style={localStyles.progressCard}>
@@ -115,9 +132,9 @@ const localStyles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
-    marginHorizontal: 16, // ← add this
+    marginHorizontal: 16,
     marginBottom: 16,
-  },  
+  },
   progressText: {
     fontSize: 14,
     color: colors.text,

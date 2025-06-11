@@ -54,3 +54,39 @@ export const getUser = async (email, password, callback) => {
     callback([]);
   }
 };
+
+export const createHabitTable = async () => {
+  const db = getDB();
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS habits (
+      id TEXT PRIMARY KEY NOT NULL,
+      title TEXT NOT NULL,
+      completed INTEGER NOT NULL
+    );
+  `);
+};
+
+export const insertHabit = async (habit) => {
+  const db = getDB();
+  await db.runAsync(
+    `INSERT INTO habits (id, title, completed) VALUES (?, ?, ?);`,
+    [habit.id, habit.title, habit.completed ? 1 : 0]
+  );
+};
+
+export const getAllHabits = async () => {
+  const db = getDB();
+  const result = await db.getAllAsync(`SELECT * FROM habits;`);
+  return result.map((row) => ({
+    ...row,
+    completed: row.completed === 1,
+  }));
+};
+
+export const toggleHabit = async (id, newStatus) => {
+  const db = getDB();
+  await db.runAsync(
+    `UPDATE habits SET completed = ? WHERE id = ?;`,
+    [newStatus ? 1 : 0, id]
+  );
+};
