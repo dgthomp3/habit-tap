@@ -1,8 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { globalStyles, colors } from '../styles';
-import { initDB } from '../database';
-import { createHabitTable, getAllHabits, insertHabit, toggleHabit } from '../database/dbUtils';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import { globalStyles, colors } from '../styles.js';
+import { initDB } from '../database.js';
+import {
+  createHabitTable,
+  getAllHabits,
+  insertHabit,
+  toggleHabit,
+  logHabitCompletion,
+  logDailyCompletion,
+} from '../database/dbUtils.js';
+
+const getLocalDate = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 const defaultHabits = [
   { id: '1', title: 'Drink Water', completed: true },
@@ -39,9 +62,32 @@ export default function DailyGoalsScreen() {
       habit.id === id ? { ...habit, completed: !habit.completed } : habit
     );
     setHabits(updated);
+
     const toggled = updated.find((h) => h.id === id);
-    await toggleHabit(id, toggled.completed);
+    try {
+      await toggleHabit(id, toggled.completed);
+      await logHabitCompletion(id, toggled.completed);
+    } catch (err) {
+      console.error('Failed to log habit completion:', err);
+    }
   };
+
+  useEffect(() => {
+    const checkAndLogDailyCompletion = async () => {
+      const allCompleted = habits.length > 0 && habits.every((h) => h.completed);
+      if (allCompleted) {
+        const today = getLocalDate();
+        try {
+          await logDailyCompletion(today);
+          console.log('🎉 Logged full day completion for', today);
+        } catch (err) {
+          console.error('❌ Failed to log full day completion:', err);
+        }
+      }
+    };
+
+    checkAndLogDailyCompletion();
+  }, [habits]);
 
   const handleAddHabit = async () => {
     if (!newHabit.trim()) return;
@@ -68,18 +114,24 @@ export default function DailyGoalsScreen() {
   );
 
   const allComplete = habits.length > 0 && habits.every((h) => h.completed);
-  const percent = habits.length > 0
-    ? Math.round((habits.filter((h) => h.completed).length / habits.length) * 100)
-    : 0;
+  const percent =
+    habits.length > 0
+      ? Math.round((habits.filter((h) => h.completed).length / habits.length) * 100)
+      : 0;
 
   return (
     <SafeAreaView style={[globalStyles.container, { backgroundColor: colors.primary }]}>
       <Text style={[globalStyles.title, { color: '#fff', textAlign: 'center', marginTop: 16 }]}>
         {allComplete ? 'Good Job!' : "Today's Habits"}
       </Text>
-      <Text style={[globalStyles.subtitle, { color: '#E0F2E0', textAlign: 'center', marginBottom: 24 }]}>
+      <Text
+        style={[
+          globalStyles.subtitle,
+          { color: '#E0F2E0', textAlign: 'center', marginBottom: 24 },
+        ]}
+      >
         {allComplete
-          ? 'You\'ve Done All your Task For the Day!'
+          ? "You've Done All your Task For the Day!"
           : 'Tap to check off completed tasks'}
       </Text>
 

@@ -3,7 +3,6 @@ import { TextInput, Text, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { globalStyles, colors } from '../styles';
 import { insertUser } from '../database/dbUtils.js';
-import { getDB } from '../database.js';
 
 export default function SignupScreen({ navigation }) {
   const [email, setEmail] = useState('');
