@@ -79,9 +79,9 @@ export default function DailyGoalsScreen() {
         const today = getLocalDate();
         try {
           await logDailyCompletion(today);
-          console.log('🎉 Logged full day completion for', today);
+          console.log('Logged full day completion for', today);
         } catch (err) {
-          console.error('❌ Failed to log full day completion:', err);
+          console.error('Failed to log full day completion:', err);
         }
       }
     };
